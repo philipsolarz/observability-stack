@@ -4,33 +4,40 @@
 set -e
 
 # --- Configuration ---
-# You can change these values
 ARGO_CD_NAMESPACE="argo-cd"
-
+ARGO_CD_CHART_PATH="k8s/modules/argo-cd"
+ARGO_CD_RELEASE_NAME="argo-cd"
 
 # --- 1. Install k3s ---
-echo "Installing k3s..."
-curl -sfL https://get.k3s.io | sh -
+echo "Installing k3s and creating a readable kubeconfig..."
+# The --write-kubeconfig-mode 644 makes the cluster config accessible without sudo
+curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
 
-# Wait for the cluster to be ready
-echo "Waiting for k3s cluster to be ready..."
-sudo k3s kubectl get nodes
+# Set KUBECONFIG env variable for this script session
+# This ensures both kubectl and helm target the k3s cluster
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
-# --- 2. Install Argo CD ---
-echo "Installing Argo CD..."
-sudo k3s kubectl create namespace "${ARGO_CD_NAMESPACE}" || true
-sudo k3s kubectl apply -n "${ARGO_CD_NAMESPACE}" -f "https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml"
+echo "Waiting for k3s node to be ready..."
+# Use the k3s-namespaced kubectl command to wait for the node
+k3s kubectl wait --for=condition=Ready node --all --timeout=300s
 
+# --- 2. Install Argo CD using your existing Helm ---
+echo "Installing Argo CD with Helm from local chart..."
+
+# Your existing 'helm' will use the KUBECONFIG variable we set
+helm install ${ARGO_CD_RELEASE_NAME} ${ARGO_CD_CHART_PATH} \
+    --namespace ${ARGO_CD_NAMESPACE} \
+    --create-namespace
 
 # Wait for Argo CD to be ready
 echo "Waiting for Argo CD to be ready..."
-sudo k3s kubectl wait --for=condition=available --timeout=600s deployment/argocd-server -n "${ARGO_CD_NAMESPACE}"
+k3s kubectl wait --for=condition=available --timeout=600s deployment/${ARGO_CD_RELEASE_NAME}-argocd-server -n "${ARGO_CD_NAMESPACE}"
 
 # --- 3. Apply the app-of-apps application ---
 echo "Applying the app-of-apps application..."
-sudo k3s kubectl apply -f "k8s/templates/Application.yaml"
+k3s kubectl apply -f "k8s/templates/Application.yaml"
 
+echo "--------------------------------------"
 echo "Installation complete!"
-echo "You can now access the Argo CD UI by port-forwarding the argo-cd-server service:"
-echo "sudo k3s kubectl port-forward svc/argo-cd-argocd-server -n argo-cd 8080:443"
-echo "Then, open https://localhost:8080 in your browser."
+echo "Argo CD and the app-of-apps are set up."
+echo "--------------------------------------"

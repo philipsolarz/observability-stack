@@ -7,7 +7,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/philipsolarz/k3s-cluster.git
+    repoURL: https://github.com/philipsolarz/observability-stack.git
     targetRevision: main
     path: k8s
     helm:
@@ -31,7 +31,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/philipsolarz/k3s-cluster.git
+    repoURL: https://github.com/philipsolarz/observability-stack.git
     targetRevision: main
     path: k8s/modules/argo-cd
     helm:
@@ -55,7 +55,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/philipsolarz/k3s-cluster.git
+    repoURL: https://github.com/philipsolarz/observability-stack.git
     targetRevision: main
     path: k8s/modules/cert-manager
     helm:

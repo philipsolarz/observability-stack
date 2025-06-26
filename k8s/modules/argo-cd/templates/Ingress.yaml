@@ -1,25 +1,25 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: argo-cd-server-ingress
-  namespace: argo-cd
-  annotations:
-    kubernetes.io/ingress.class: "traefik"
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+  name: {{ .Release.Name }}-server-ingress
+  namespace: {{ .Release.Namespace }}
+  # We remove all old annotations, especially kubernetes.io/ingress.class
+  # and any cert-manager or TLS related ones.
+  # You can add other Traefik-specific annotations here if needed later.
+  annotations: {}
 spec:
-  ingressClassName: nginx
+  # This is the correct, modern way to specify the ingress controller.
+  ingressClassName: traefik
   rules:
-  - host: argocd.localhost
+  - host: argocd.localhost # Or whatever host you have in your values.yaml
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: argo-cd-argocd-server
+            # The service name is typically constructed from the release name
+            name: {{ .Release.Name }}-argocd-server
             port:
               number: 80
-  tls:
-  - hosts:
-    - argocd.localhost
-    secretName: argo-cd-server-tls # as expected by argo-cd-server
+# The entire 'tls:' section has been removed for a plain HTTP setup.

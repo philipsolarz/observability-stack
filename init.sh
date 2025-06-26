@@ -10,21 +10,21 @@ ARGO_CD_RELEASE_NAME="argo-cd"
 
 # --- 1. Install k3s ---
 echo "Installing k3s and creating a readable kubeconfig..."
-# The --write-kubeconfig-mode 644 makes the cluster config accessible without sudo
 curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
 
+# Give the k3s service a moment to start up properly
+echo "Waiting for k3s server to initialize..."
+sleep 15
+
 # Set KUBECONFIG env variable for this script session
-# This ensures both kubectl and helm target the k3s cluster
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
 echo "Waiting for k3s node to be ready..."
-# Use the k3s-namespaced kubectl command to wait for the node
+# Now this command should find the node resource
 k3s kubectl wait --for=condition=Ready node --all --timeout=300s
 
 # --- 2. Install Argo CD using your existing Helm ---
 echo "Installing Argo CD with Helm from local chart..."
-
-# Your existing 'helm' will use the KUBECONFIG variable we set
 helm install ${ARGO_CD_RELEASE_NAME} ${ARGO_CD_CHART_PATH} \
     --namespace ${ARGO_CD_NAMESPACE} \
     --create-namespace

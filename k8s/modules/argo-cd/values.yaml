@@ -4,6 +4,7 @@ argo-cd:
   configs:
     params:
       server.insecure: "true"
+      server.repo.server.plaintext: "true"
   server:
     ingress:
       enabled: true

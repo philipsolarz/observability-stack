@@ -23,6 +23,8 @@ echo "Waiting for k3s node to be ready..."
 # Now this command should find the node resource
 k3s kubectl wait --for=condition=Ready node --all --timeout=300s
 
+sleep 60
+
 # --- 2. Install Argo CD using your existing Helm ---
 echo "Installing Argo CD with Helm from local chart..."
 helm install ${ARGO_CD_RELEASE_NAME} ${ARGO_CD_CHART_PATH} \

@@ -2,35 +2,33 @@ minio:
   mode: standalone
   persistence:
     enabled: true
-    size: 20Gi
+    size: 10Gi
     storageClass: local-path
 
   service:
-    type: LoadBalancer          # k3s’ klipper-lb
-    ports:
-      api: 9000
-      console: 9001
+    type: LoadBalancer
+    port: 9000          # S3 / API
 
+  consoleService:
+    type: LoadBalancer
+    port: 9001          # Web console
+
+  # --- Ingress for the API --------------------------------------------------
   ingress:
     enabled: true
-    className: traefik
+    ingressClassName: traefik
+    path: /
     hosts:
-      - host: s3.minio.localhost      # API endpoint
-        paths:
-          - path: /
-            pathType: Prefix
-            service:
-              name: minio
-              port:
-                name: api
-      - host: console.minio.localhost # Web console
-        paths:
-          - path: /
-            pathType: Prefix
-            service:
-              name: minio
-              port:
-                name: console
+      - s3.minio.localhost   # <- **string**, not map
+    tls: []                  # add a secret here if you terminate TLS
+
+  # --- Ingress for the console ---------------------------------------------
+  consoleIngress:
+    enabled: true
+    ingressClassName: traefik
+    path: /
+    hosts:
+      - console.minio.localhost
 
   env:
     - name: MINIO_BROWSER_REDIRECT_URL

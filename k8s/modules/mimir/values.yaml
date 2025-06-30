@@ -1,31 +1,40 @@
 mimir-distributed:
 
-  # ------------------------------------------------------------
-  # 1. We already have MinIO – don’t let the sub-chart deploy one
-  # ------------------------------------------------------------
   minio:
-    enabled: false            # use the external object-store instead
-                              # (Grafana docs call this out explicitly) :contentReference[oaicite:1]{index=1}
+    enabled: false
 
-  # ------------------------------------------------------------
-  # 2. Core Mimir config
-  # ------------------------------------------------------------
   mimir:
     structuredConfig:
       common:
-        replication_factor: 1            # quorum-free one-node mode
-
-        # Object store connection (S3-compatible MinIO)
         storage:
           backend: s3
           s3:
             endpoint: minio.minio.svc.cluster.local:9000
             region: us-east-1
-            access_key_id: minio          # ← change if you customised MinIO
-            secret_access_key: minio123    # ← change if you customised MinIO
-            insecure: true                 # plain-HTTP inside the cluster
+            access_key_id: minio
+            secret_access_key: minio123
+            insecure: true
 
-      # One bucket per subsystem keeps things tidy
+      distributor:
+        ring:
+          replication_factor: 1
+
+      ingester:
+        ring:
+          replication_factor: 1
+
+      store_gateway:
+        sharding_ring:
+          replication_factor: 1
+
+      ruler:
+        sharding_ring:
+          replication_factor: 1
+
+      alertmanager:
+        sharding_ring:
+          replication_factor: 1
+
       blocks_storage:
         s3:
           bucket_name: mimir-tsdb
@@ -36,9 +45,6 @@ mimir-distributed:
         s3:
           bucket_name: mimir-alerts
 
-  # ------------------------------------------------------------
-  # 3. Run a single replica of every micro-service
-  # ------------------------------------------------------------
   distributor:      { replicas: 1 }
   ingester:         { replicas: 1 }
   querier:          { replicas: 1 }
@@ -48,18 +54,12 @@ mimir-distributed:
   alertmanager:     { replicas: 1 }
   ruler:            { replicas: 1 }
 
-  # ------------------------------------------------------------
-  # 4. Turn off the Memcached caches (save RAM/CPU)
-  # ------------------------------------------------------------
   chunks-cache:     { enabled: false }
   index-cache:      { enabled: false }
   metadata-cache:   { enabled: false }
   results-cache:    { enabled: false }
   admin-cache:      { enabled: false }
 
-  # ------------------------------------------------------------
-  # 5. Cluster-internal “gateway” (nginx) so you have one port to hit
-  # ------------------------------------------------------------
   gateway:
     enabledNonEnterprise: true
     replicas: 1

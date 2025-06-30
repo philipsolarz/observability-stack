@@ -1,3 +1,5 @@
+# charts/mimir/values.yaml  (wrapper chart)
+
 mimir-distributed:
 
   minio:
@@ -16,24 +18,19 @@ mimir-distributed:
             insecure: true
 
       distributor:
-        ring:
-          replication_factor: 1
+        replication_factor: 1
 
       ingester:
-        ring:
-          replication_factor: 1
+        replication_factor: 1
 
       store_gateway:
-        sharding_ring:
-          replication_factor: 1
+        replication_factor: 1
 
       ruler:
-        sharding_ring:
-          replication_factor: 1
+        replication_factor: 1
 
       alertmanager:
-        sharding_ring:
-          replication_factor: 1
+        replication_factor: 1
 
       blocks_storage:
         s3:
@@ -45,21 +42,20 @@ mimir-distributed:
         s3:
           bucket_name: mimir-alerts
 
-  distributor:      { replicas: 1 }
-  ingester:         { replicas: 1 }
-  querier:          { replicas: 1 }
-  query_frontend:   { replicas: 1 }
-  store_gateway:    { replicas: 1 }
-  compactor:        { replicas: 1 }
-  alertmanager:     { replicas: 1 }
-  ruler:            { replicas: 1 }
+  distributor:    { replicas: 1 }
+  ingester:       { replicas: 1 }
+  querier:        { replicas: 1 }
+  query_frontend: { replicas: 1 }
+  store_gateway:  { replicas: 1 }
+  compactor:      { replicas: 1 }
+  alertmanager:   { replicas: 1 }
+  ruler:          { replicas: 1 }
 
-  chunks-cache:     { enabled: false }
-  index-cache:      { enabled: false }
-  metadata-cache:   { enabled: false }
-  results-cache:    { enabled: false }
-  admin-cache:      { enabled: false }
+  chunks-cache:   { enabled: false }
+  index-cache:    { enabled: false }
+  metadata-cache: { enabled: false }
+  results-cache:  { enabled: false }
+  admin-cache:    { enabled: false }
 
-  gateway:
-    enabledNonEnterprise: true
+  nginx:
     replicas: 1

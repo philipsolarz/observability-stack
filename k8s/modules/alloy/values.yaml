@@ -1,0 +1,77 @@
+alloy:
+  namespaceOverride: observability
+
+  controller:
+    type: daemonset                   # one Alloy per node
+    podLabels:
+      app: alloy
+    resources:                        # tiny footprint
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+  # ---------------------------------------------------------------
+  # 1.  Minimal Flow configuration (templated into a ConfigMap)
+  # ---------------------------------------------------------------
+  alloy:
+    storagePath: /var/lib/alloy       # survives container restarts
+    mounts:
+      varlog: true                    # let Alloy tail host logs
+    configMap:
+      create: true
+      content: |
+        // ---------- Grafana Alloy flow file ----------
+        server "alloy" {
+          http {
+            listen_address = "0.0.0.0:12345"
+          }
+        }
+
+        // ────────────────────────────────  Metrics  ────────────────────────────────
+        prometheus.scrape "self" {
+          targets = [ "localhost:12345/metrics" ]
+        }
+
+        prometheus.remote_write "mimir" {
+          endpoint {
+            url = "http://mimir-gateway.observability.svc.cluster.local/api/v1/push"
+          }
+          forward_to = [ prometheus.scrape.self.receiver ]
+        }
+
+        // ────────────────────────────────  Logs  ───────────────────────────────────
+        loki.source.file "varlogs" {
+          paths = [ "/var/log/**/*.log" ]   // host logs & container logs
+          forward_to = [ loki.write.default.receiver ]
+        }
+
+        loki.write "default" {
+          endpoint {
+            url = "http://loki-gateway.observability.svc.cluster.local/loki/api/v1/push"
+          }
+        }
+
+        // ────────────────────────────────  Traces  ─────────────────────────────────
+        //  Nothing on this laptop is emitting OTLP traces yet, but Alloy is ready:
+        otlp.receiver "default" {
+          grpc {
+            listen_address = "0.0.0.0:4317"
+          }
+          http {
+            listen_address = "0.0.0.0:4318"
+          }
+          forward_to = [ tempo.write.default.receiver ]
+        }
+
+        tempo.write "default" {
+          endpoint {
+            url = "http://tempo-gateway.observability.svc.cluster.local"
+          }
+        }
+
+        // ────────────────────────────────  End of file ─────────────────────────────
+  image:
+    tag: latest                       # or pin to the version you prefer

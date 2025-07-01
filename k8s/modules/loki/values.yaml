@@ -19,13 +19,13 @@ loki-distributed:
         active_index_directory: /var/loki/index
         cache_location: /var/loki/cache
         cache_ttl: 168h
-      s3:
-        endpoint: minio.minio.svc.cluster.local:9000
-        bucketnames: loki-data
-        access_key_id: pyAGdJUqOQNyIgz6S4k3
-        secret_access_key: MGDnYWjitaNTdmZ9vVnBreeY52IdVBAqkguqmQfp
-        insecure: true
-        s3forcepathstyle: true
+    s3:
+      endpoint: minio.minio.svc.cluster.local:9000
+      bucketnames: loki-data
+      access_key_id: pyAGdJUqOQNyIgz6S4k3
+      secret_access_key: MGDnYWjitaNTdmZ9vVnBreeY52IdVBAqkguqmQfp
+      insecure: true
+      s3forcepathstyle: true
 
   # --------------------------------------------------------------------
   # 2. Laptop-sized replicas & requests

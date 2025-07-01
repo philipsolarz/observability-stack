@@ -1,0 +1,100 @@
+loki-distributed:
+  # --------------------------------------------------------------------
+  # 1. Store everything in MinIO (bucket must exist beforehand)
+  # --------------------------------------------------------------------
+  loki:
+    schemaConfig:
+      configs:
+        - from: "2025-01-01"
+          store: boltdb-shipper
+          object_store: s3
+          schema: v12
+          index:
+            prefix: loki_index_
+            period: 24h
+
+    storageConfig:
+      boltdb_shipper:
+        shared_store: s3
+        active_index_directory: /var/loki/index
+        cache_location: /var/loki/cache
+        cache_ttl: 168h
+      s3:
+        endpoint: minio.minio.svc.cluster.local:9000
+        bucketnames: loki-data
+        access_key_id: pyAGdJUqOQNyIgz6S4k3
+        secret_access_key: MGDnYWjitaNTdmZ9vVnBreeY52IdVBAqkguqmQfp
+        insecure: true
+        s3forcepathstyle: true
+
+  # --------------------------------------------------------------------
+  # 2. Laptop-sized replicas & requests
+  # --------------------------------------------------------------------
+  distributor:
+    replicas: 1
+    resources:
+      requests: { cpu: 50m, memory: 128Mi }
+
+  ingester:
+    replicas: 1
+    resources:
+      requests: { cpu: 100m, memory: 256Mi }
+    zoneAwareReplication:
+      enabled: false
+    persistence:
+      enabled: false
+
+  querier:
+    replicas: 1
+    resources:
+      requests: { cpu: 50m, memory: 128Mi }
+
+  queryFrontend:
+    replicas: 1
+    resources:
+      requests: { cpu: 50m, memory: 128Mi }
+
+  compactor:
+    enabled: true
+    replicas: 1
+    resources:
+      requests: { cpu: 50m, memory: 256Mi }
+
+  # --------------------------------------------------------------------
+  # 3. Expose HTTP just like you did for Mimir & Tempo
+  # --------------------------------------------------------------------
+  gateway:
+    enabled: true
+    service:
+      port: 80
+    ingress:
+      enabled: true
+      ingressClassName: traefik
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: web
+      hosts:
+        - host: loki.localhost
+          paths:
+            - path: /
+              pathType: Prefix
+      tls: []
+
+  # --------------------------------------------------------------------
+  # 4. Disable extras you don’t need on a single-node demo
+  # --------------------------------------------------------------------
+  queryScheduler:
+    enabled: false
+  tableManager:
+    enabled: false
+  ruler:
+    enabled: false
+  indexGateway:
+    enabled: false
+  memcachedChunks:
+    enabled: false
+  memcachedFrontend:
+    enabled: false
+  memcachedIndexQueries:
+    enabled: false
+  memcachedIndexWrites:
+    enabled: false

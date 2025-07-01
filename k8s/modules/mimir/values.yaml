@@ -1,61 +1,115 @@
-# charts/mimir/values.yaml  (wrapper chart)
-
 mimir-distributed:
-
+  ###########################################################################
+  # Object-storage: use the MinIO instance that is already running
+  ###########################################################################
   minio:
-    enabled: false
-
+    enabled: false          # don’t install a second MinIO
   mimir:
-    structuredConfig:
+    structuredConfig:       # applied _after_ the default template
       common:
         storage:
           backend: s3
           s3:
-            endpoint: minio.minio.svc.cluster.local:9000
-            region: us-east-1
+            endpoint: "http://minio.minio.svc.cluster.local:9000"
+            bucket_name: mimir-tsdb
             access_key_id: minio
             secret_access_key: minio123
-            insecure: true
-
-      distributor:
-        replication_factor: 1
-
-      ingester:
-        replication_factor: 1
-
-      store_gateway:
-        replication_factor: 1
-
-      ruler:
-        replication_factor: 1
-
-      alertmanager:
-        replication_factor: 1
-
+            http:
+              insecure_skip_verify: true
       blocks_storage:
+        backend: s3
         s3:
+          endpoint: "http://minio.minio.svc.cluster.local:9000"
           bucket_name: mimir-tsdb
-      ruler_storage:
-        s3:
-          bucket_name: mimir-ruler
+          access_key_id: minio
+          secret_access_key: minio123
+          http:
+            insecure_skip_verify: true
       alertmanager_storage:
+        backend: s3
         s3:
+          endpoint: "http://minio.minio.svc.cluster.local:9000"
           bucket_name: mimir-alerts
+          access_key_id: minio
+          secret_access_key: minio123
+          http:
+            insecure_skip_verify: true
+      ruler_storage:
+        backend: s3
+        s3:
+          endpoint: "http://minio.minio.svc.cluster.local:9000"
+          bucket_name: mimir-ruler
+          access_key_id: minio
+          secret_access_key: minio123
+          http:
+            insecure_skip_verify: true
 
-  distributor:    { replicas: 1 }
-  ingester:       { replicas: 1 }
-  querier:        { replicas: 1 }
-  query_frontend: { replicas: 1 }
-  store_gateway:  { replicas: 1 }
-  compactor:      { replicas: 1 }
-  alertmanager:   { replicas: 1 }
-  ruler:          { replicas: 1 }
-
-  chunks-cache:   { enabled: false }
-  index-cache:    { enabled: false }
-  metadata-cache: { enabled: false }
-  results-cache:  { enabled: false }
-  admin-cache:    { enabled: false }
-
-  nginx:
+  ###########################################################################
+  # Single-replica setup – keep it light-weight
+  ###########################################################################
+  alertmanager:
     replicas: 1
+  distributor:
+    replicas: 1
+  ingester:
+    replicas: 1
+    zoneAwareReplication:
+      enabled: false
+  store_gateway:
+    replicas: 1
+    zoneAwareReplication:
+      enabled: false
+  querier:
+    replicas: 1
+  query_frontend:
+    replicas: 1
+  query_scheduler:
+    enabled: false          # not needed at this scale
+  ruler:
+    replicas: 1
+  compactor:
+    replicas: 1
+
+  ###########################################################################
+  # Lightweight resource requests (tweak to taste)
+  ###########################################################################
+  distributor:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+  ingester:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+  querier:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+  query_frontend:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+  store_gateway:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+  compactor:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+
+  ###########################################################################
+  # Expose a simple entry-point you can curl from the host
+  ###########################################################################
+  gateway:
+    enabledNonEnterprise: true          # deploy the nginx gateway even without GEM
+    service:
+      type: NodePort                    # reachable from the laptop’s browser
+      port: 80
+      nodePort: 32080                   # change if the port is already taken

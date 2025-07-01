@@ -113,4 +113,5 @@ mimir-distributed:
         - host: mimir.localhost
           paths:
             - path: /
+              pathType: Prefix 
       tls: []

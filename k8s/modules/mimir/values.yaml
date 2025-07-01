@@ -14,6 +14,7 @@ mimir-distributed:
             bucket_name: mimir-tsdb
             access_key_id: C1DgC6XyEpQlUeTnXSt4
             secret_access_key: JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg # for local testing
+            insecure: true 
             http:
               insecure_skip_verify: true
       blocks_storage:
@@ -23,6 +24,7 @@ mimir-distributed:
           bucket_name: mimir-tsdb
           access_key_id: C1DgC6XyEpQlUeTnXSt4
           secret_access_key: JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg
+          insecure: true 
           http:
             insecure_skip_verify: true
       alertmanager_storage:
@@ -32,6 +34,7 @@ mimir-distributed:
           bucket_name: mimir-alerts
           access_key_id: C1DgC6XyEpQlUeTnXSt4
           secret_access_key: JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg
+          insecure: true 
           http:
             insecure_skip_verify: true
       ruler_storage:
@@ -41,6 +44,7 @@ mimir-distributed:
           bucket_name: mimir-ruler
           access_key_id: C1DgC6XyEpQlUeTnXSt4
           secret_access_key: JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg
+          insecure: true 
           http:
             insecure_skip_verify: true
 

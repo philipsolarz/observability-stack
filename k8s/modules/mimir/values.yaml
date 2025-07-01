@@ -3,17 +3,17 @@ mimir-distributed:
   # Object-storage: use the MinIO instance that is already running
   ###########################################################################
   minio:
-    enabled: false          # don’t install a second MinIO
+    enabled: false
   mimir:
-    structuredConfig:       # applied _after_ the default template
+    structuredConfig:
       common:
         storage:
           backend: s3
           s3:
             endpoint: "http://minio.minio.svc.cluster.local:9000"
             bucket_name: mimir-tsdb
-            access_key_id: minio
-            secret_access_key: minio123
+            access_key_id: C1DgC6XyEpQlUeTnXSt4
+            secret_access_key: JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg # for local testing
             http:
               insecure_skip_verify: true
       blocks_storage:
@@ -21,8 +21,8 @@ mimir-distributed:
         s3:
           endpoint: "http://minio.minio.svc.cluster.local:9000"
           bucket_name: mimir-tsdb
-          access_key_id: minio
-          secret_access_key: minio123
+          access_key_id: C1DgC6XyEpQlUeTnXSt4
+          secret_access_key: JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg
           http:
             insecure_skip_verify: true
       alertmanager_storage:
@@ -30,8 +30,8 @@ mimir-distributed:
         s3:
           endpoint: "http://minio.minio.svc.cluster.local:9000"
           bucket_name: mimir-alerts
-          access_key_id: minio
-          secret_access_key: minio123
+          access_key_id: C1DgC6XyEpQlUeTnXSt4
+          secret_access_key: JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg
           http:
             insecure_skip_verify: true
       ruler_storage:
@@ -39,14 +39,11 @@ mimir-distributed:
         s3:
           endpoint: "http://minio.minio.svc.cluster.local:9000"
           bucket_name: mimir-ruler
-          access_key_id: minio
-          secret_access_key: minio123
+          access_key_id: C1DgC6XyEpQlUeTnXSt4
+          secret_access_key: JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg
           http:
             insecure_skip_verify: true
 
-  ###########################################################################
-  # Single-replica setup – keep it light-weight
-  ###########################################################################
   alertmanager:
     replicas: 1
   distributor:
@@ -64,15 +61,12 @@ mimir-distributed:
   query_frontend:
     replicas: 1
   query_scheduler:
-    enabled: false          # not needed at this scale
+    enabled: false
   ruler:
     replicas: 1
   compactor:
     replicas: 1
 
-  ###########################################################################
-  # Lightweight resource requests (tweak to taste)
-  ###########################################################################
   distributor:
     resources:
       requests:
@@ -104,12 +98,19 @@ mimir-distributed:
         cpu: 50m
         memory: 256Mi
 
-  ###########################################################################
-  # Expose a simple entry-point you can curl from the host
-  ###########################################################################
   gateway:
-    enabledNonEnterprise: true          # deploy the nginx gateway even without GEM
+    enabledNonEnterprise: true
+
     service:
-      type: NodePort                    # reachable from the laptop’s browser
-      port: 80
-      nodePort: 32080                   # change if the port is already taken
+      port: 80 
+
+    ingress:
+      enabled: true
+      ingressClassName: traefik 
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: web
+      hosts:
+        - host: mimir.localhost
+          paths:
+            - path: /
+      tls: []

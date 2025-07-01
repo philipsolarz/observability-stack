@@ -1,0 +1,63 @@
+grafana:
+  replicas: 1
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+
+  # --------------------------------------------------------------------
+  # 1.  Service & Ingress (browser URL = http://grafana.localhost/)
+  # --------------------------------------------------------------------
+  service:
+    type: ClusterIP
+    port: 80                       # Grafana inside runs on 3000
+
+  ingress:
+    enabled: true
+    ingressClassName: traefik      # same as you used for Loki
+    hosts:
+      - grafana.localhost
+    path: /
+    pathType: Prefix
+    tls: []                         # add certs later if you want HTTPS
+
+  # --------------------------------------------------------------------
+  # 2.  Admin login for your laptop lab
+  # --------------------------------------------------------------------
+  adminUser: admin
+  adminPassword: admin    # ☞ change later if you expose Grafana!
+
+  # --------------------------------------------------------------------
+  # 3.  Pre-provisioned data-sources
+  # --------------------------------------------------------------------
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        # --- Prometheus-compatible metrics (Mimir) ---------------------
+        - name: Mimir
+          uid: mimir
+          type: prometheus
+          access: proxy
+          url: http://mimir-gateway.observability.svc.cluster.local    # <-- service:port
+          isDefault: true
+
+        # --- Logs (Loki) ----------------------------------------------
+        - name: Loki
+          uid: loki
+          type: loki
+          access: proxy
+          url: http://loki-gateway.observability.svc.cluster.local
+
+        # --- Traces (Tempo) -------------------------------------------
+        - name: Tempo
+          uid: tempo
+          type: tempo
+          access: proxy
+          url: http://tempo-gateway.observability.svc.cluster.local
+          jsonData:
+            httpMethod: GET
+            # optional: link traces → metrics in Mimir
+            traceToMetrics:
+              datasourceUid: mimir

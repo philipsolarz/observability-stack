@@ -1,7 +1,4 @@
 mimir-distributed:
-  ###########################################################################
-  # Object-storage: use the MinIO instance that is already running
-  ###########################################################################
   minio:
     enabled: false
   mimir:

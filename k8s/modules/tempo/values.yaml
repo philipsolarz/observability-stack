@@ -1,0 +1,96 @@
+# tempo-values.yaml  — only the keys that differ from the chart defaults
+tempo-distributed:
+  # ----------------------------------------------------------------------
+  # 1. Disable the chart’s optional MinIO in favour of your own instance
+  # ----------------------------------------------------------------------
+  minio:
+    enabled: false
+
+  # ----------------------------------------------------------------------
+  # 2. Tell Tempo to store blocks and WAL in your MinIO bucket
+  #    (exactly the same style you used for Mimir)
+  # ----------------------------------------------------------------------
+  storage:
+    trace:
+      backend: s3                 # activate the S3 client
+      s3:
+        endpoint: minio.minio.svc.cluster.local:9000
+        bucket_name: tempo-traces
+        access_key_id: 7WhZifQADUdAKFkZv2Ee
+        secret_access_key: dmdC4sC6bihbaMw7Ka702CvhH1S3vGPNykuzcfQI
+        insecure: true            # because MinIO is HTTP
+        http:
+          insecure_skip_verify: true
+
+  # ----------------------------------------------------------------------
+  # 3. Shrink the deployment to laptop-friendly sizes
+  # ----------------------------------------------------------------------
+  distributor:
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+
+  ingester:
+    replicas: 1
+    zoneAwareReplication:
+      enabled: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+  querier:
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+
+  queryFrontend:
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+
+  compactor:
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+
+  metricsGenerator:
+    enabled: false        # saves RAM; turn on later if you need span-metrics
+
+  # ----------------------------------------------------------------------
+  # 4. Expose the “gateway” the same way you did for Mimir
+  # ----------------------------------------------------------------------
+  gateway:
+    enabled: true
+    service:
+      port: 80
+    ingress:
+      enabled: true
+      ingressClassName: traefik
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: web
+      hosts:
+        - host: tempo.localhost
+          paths:
+            - path: /
+              pathType: Prefix
+      tls: []
+
+  # ----------------------------------------------------------------------
+  # 5. Minimal receiver-setup so something can actually send traces in
+  #    (OTLP gRPC & HTTP are the modern defaults)
+  # ----------------------------------------------------------------------
+  traces:
+    otlp:
+      grpc:
+        enabled: true
+      http:
+        enabled: true

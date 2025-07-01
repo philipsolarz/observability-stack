@@ -10,7 +10,7 @@ mimir-distributed:
         storage:
           backend: s3
           s3:
-            endpoint: "http://minio.minio.svc.cluster.local:9000"
+            endpoint: minio.minio.svc.cluster.local:9000
             bucket_name: mimir-tsdb
             access_key_id: C1DgC6XyEpQlUeTnXSt4
             secret_access_key: JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg # for local testing
@@ -19,7 +19,7 @@ mimir-distributed:
       blocks_storage:
         backend: s3
         s3:
-          endpoint: "http://minio.minio.svc.cluster.local:9000"
+          endpoint: minio.minio.svc.cluster.local:9000
           bucket_name: mimir-tsdb
           access_key_id: C1DgC6XyEpQlUeTnXSt4
           secret_access_key: JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg
@@ -28,7 +28,7 @@ mimir-distributed:
       alertmanager_storage:
         backend: s3
         s3:
-          endpoint: "http://minio.minio.svc.cluster.local:9000"
+          endpoint: minio.minio.svc.cluster.local:9000
           bucket_name: mimir-alerts
           access_key_id: C1DgC6XyEpQlUeTnXSt4
           secret_access_key: JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg
@@ -37,7 +37,7 @@ mimir-distributed:
       ruler_storage:
         backend: s3
         s3:
-          endpoint: "http://minio.minio.svc.cluster.local:9000"
+          endpoint: minio.minio.svc.cluster.local:9000
           bucket_name: mimir-ruler
           access_key_id: C1DgC6XyEpQlUeTnXSt4
           secret_access_key: JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg

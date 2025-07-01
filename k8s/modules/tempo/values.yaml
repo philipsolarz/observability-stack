@@ -19,8 +19,6 @@ tempo-distributed:
         access_key_id: 7WhZifQADUdAKFkZv2Ee
         secret_access_key: dmdC4sC6bihbaMw7Ka702CvhH1S3vGPNykuzcfQI
         insecure: true            # because MinIO is HTTP
-        http:
-          insecure_skip_verify: true
 
   # ----------------------------------------------------------------------
   # 3. Shrink the deployment to laptop-friendly sizes

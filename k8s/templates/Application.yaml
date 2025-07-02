@@ -170,14 +170,14 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: alloy
+  name: opentelemetry-collector
   namespace: argo-cd
 spec:
   project: default
   source:
     repoURL: https://github.com/philipsolarz/observability-stack.git
     targetRevision: main
-    path: k8s/modules/alloy
+    path: k8s/modules/opentelemetry-collector
     helm:
       valueFiles:
         - values.yaml
@@ -190,6 +190,30 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: alloy
+#   namespace: argo-cd
+# spec:
+#   project: default
+#   source:
+#     repoURL: https://github.com/philipsolarz/observability-stack.git
+#     targetRevision: main
+#     path: k8s/modules/alloy
+#     helm:
+#       valueFiles:
+#         - values.yaml
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: observability
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+#     syncOptions:
+#       - CreateNamespace=true
 
 
 

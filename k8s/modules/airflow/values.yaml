@@ -1,4 +1,5 @@
 airflow:
+  executor: "LocalExecutor"  
   createUserJob:
     useHelmHooks: false
     applyCustomEnv: false
@@ -7,5 +8,29 @@ airflow:
     useHelmHooks: false
     applyCustomEnv: false
 
+  redis:
+    enabled: false
+  flower:
+    enabled: false
   statsd:
     enabled: false
+  pgbouncer:
+    enabled: false
+  dagProcessor:
+    enabled: false
+
+  dags:
+    persistence:
+      enabled: false
+    gitSync:
+      enabled: false
+
+  ingress:
+    web:
+      enabled: true
+      ingressClassName: traefik
+      hosts:
+        - airflow.localhost          # pick any host-name you like
+      path: /
+      tls:                       # simple HTTP for local work; flip to true once you have TLS certs
+        enabled: false

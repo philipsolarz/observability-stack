@@ -12,7 +12,8 @@ airflow:
     enabled: false
   statsd:
     enabled: false
-
+  redis:
+    enabled: false
 
   ingress:
     web:

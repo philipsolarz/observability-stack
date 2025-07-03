@@ -1,16 +1,11 @@
 airflow:
   createUserJob:
-    enabled: true           # keep the job
-    useHelmHooks: false     # required for Argo CD
+    useHelmHooks: false
     applyCustomEnv: false
 
   migrateDatabaseJob:
-    enabled: true
-    useHelmHooks: false     # required for Argo CD
+    useHelmHooks: false
     applyCustomEnv: false
-    # Optional but handy—run the migration on every sync
-    jobAnnotations:
-      "argocd.argoproj.io/hook": Sync
 
   statsd:
     enabled: false

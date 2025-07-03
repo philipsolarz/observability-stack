@@ -16,8 +16,8 @@ tempo-distributed:
       s3:
         endpoint: minio.minio.svc.cluster.local:9000
         bucket: tempo-traces
-        access_key: eejTYGso01tHiE5Ui287
-        secret_key: yeEEatXZzPojI7R3k97HhDBPgGVyRCgygbcH7dhB
+        access_key: wFwSmNDnIkLWOC2AOnoG
+        secret_key: cfSNoOuAgDVJpgomIWm7PuysjowIMD7nB76erzAO
         insecure: true            # because MinIO is HTTP
 
   # ----------------------------------------------------------------------

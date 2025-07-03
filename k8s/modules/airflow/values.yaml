@@ -1,5 +1,7 @@
 airflow:
   executor: "LocalExecutor"  
+  fernetKey: ""
+  webserverSecretKey: ""
   createUserJob:
     useHelmHooks: false
     applyCustomEnv: false

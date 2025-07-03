@@ -18,11 +18,11 @@ airflow:
     enabled: false
 
   ingress:
-    web:
+    apiServer:
       enabled: true
       ingressClassName: traefik
       hosts:
-        - airflow.localhost          # pick any host-name you like
+        - airflow.localhost
       path: /
-      tls:                       # simple HTTP for local work; flip to true once you have TLS certs
-        enabled: false
+      tls:
+        enabled: false         # flip to true once you add certs

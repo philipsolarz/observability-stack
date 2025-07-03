@@ -14,12 +14,6 @@ airflow:
     enabled: false
 
 
-  dags:
-    persistence:
-      enabled: false
-    gitSync:
-      enabled: false
-
   ingress:
     web:
       enabled: true

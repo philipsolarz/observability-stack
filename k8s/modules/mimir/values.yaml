@@ -9,8 +9,8 @@ mimir-distributed:
           s3:
             endpoint: minio.minio.svc.cluster.local:9000
             bucket_name: mimir-tsdb
-            access_key_id: C1DgC6XyEpQlUeTnXSt4
-            secret_access_key: JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg # for local testing
+            access_key_id: eejTYGso01tHiE5Ui287
+            secret_access_key: yeEEatXZzPojI7R3k97HhDBPgGVyRCgygbcH7dhB # for local testing
             insecure: true 
             http:
               insecure_skip_verify: true
@@ -19,8 +19,8 @@ mimir-distributed:
         s3:
           endpoint: minio.minio.svc.cluster.local:9000
           bucket_name: mimir-tsdb
-          access_key_id: C1DgC6XyEpQlUeTnXSt4
-          secret_access_key: JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg
+          access_key_id: eejTYGso01tHiE5Ui287
+          secret_access_key: yeEEatXZzPojI7R3k97HhDBPgGVyRCgygbcH7dhB
           insecure: true 
           http:
             insecure_skip_verify: true
@@ -29,8 +29,8 @@ mimir-distributed:
         s3:
           endpoint: minio.minio.svc.cluster.local:9000
           bucket_name: mimir-alerts
-          access_key_id: C1DgC6XyEpQlUeTnXSt4
-          secret_access_key: JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg
+          access_key_id: eejTYGso01tHiE5Ui287
+          secret_access_key: yeEEatXZzPojI7R3k97HhDBPgGVyRCgygbcH7dhB
           insecure: true 
           http:
             insecure_skip_verify: true
@@ -39,8 +39,8 @@ mimir-distributed:
         s3:
           endpoint: minio.minio.svc.cluster.local:9000
           bucket_name: mimir-ruler
-          access_key_id: C1DgC6XyEpQlUeTnXSt4
-          secret_access_key: JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg
+          access_key_id: eejTYGso01tHiE5Ui287
+          secret_access_key: yeEEatXZzPojI7R3k97HhDBPgGVyRCgygbcH7dhB
           insecure: true 
           http:
             insecure_skip_verify: true

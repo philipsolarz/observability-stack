@@ -18,7 +18,7 @@ loki-distributed:
         # URI format:  http[s]://<access_key>:<secret>@<fqdn>:<port>/<bucket>
         # The trailing dot in “localhost.” you saw in the doc avoids search-domain
         # expansion; inside the cluster we don’t need it.
-        s3: http://C1DgC6XyEpQlUeTnXSt4:JdErHDxH7wy63QYN3UHFVTTJxfNeOw1XTtWRAgSg@minio.minio.svc.cluster.local:9000/loki-data
+        s3: http://eejTYGso01tHiE5Ui287:yeEEatXZzPojI7R3k97HhDBPgGVyRCgygbcH7dhB@minio.minio.svc.cluster.local:9000/loki-data
         s3forcepathstyle: true      # MinIO prefers path-style URLs
       tsdb_shipper:
         active_index_directory: /loki/index
